@@ -1,9 +1,10 @@
-﻿using WDBXEditor.Reader;
+using WDBXEditor.Reader;
 using WDBXEditor.Storage;
 using WDBXEditor.Archives.MPQ;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -36,6 +37,8 @@ namespace WDBXEditor
 
 			_bindingsource.DataSource = null;
 			advancedDataGridView.DataSource = _bindingsource;
+
+			ApplyModernGridTheme();
 		}
 
 		public Main(string[] filenames)
@@ -45,7 +48,89 @@ namespace WDBXEditor
 			_bindingsource.DataSource = null;
 			advancedDataGridView.DataSource = _bindingsource;
 
+			ApplyModernGridTheme();
+
 			Parallel.For(0, filenames.Length, f => InstanceManager.AutoRun.Enqueue(filenames[f]));
+		}
+
+		private void ApplyModernGridTheme()
+		{
+			Font gridFont = new Font("Segoe UI", 9F, FontStyle.Regular);
+			Font headerFont = new Font("Segoe UI", 9F, FontStyle.Bold);
+
+			advancedDataGridView.Font = gridFont;
+			advancedDataGridView.BackgroundColor = Color.White;
+			advancedDataGridView.BorderStyle = BorderStyle.None;
+			advancedDataGridView.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+			advancedDataGridView.GridColor = Color.FromArgb(229, 232, 237);
+
+			advancedDataGridView.EnableHeadersVisualStyles = false;
+			advancedDataGridView.AllowUserToResizeRows = false;
+			advancedDataGridView.StandardTab = true;
+
+			advancedDataGridView.RowHeadersWidth = 52;
+			advancedDataGridView.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+
+			advancedDataGridView.DefaultCellStyle = new DataGridViewCellStyle
+			{
+				BackColor = Color.White,
+				ForeColor = Color.FromArgb(31, 41, 55),
+				SelectionBackColor = Color.FromArgb(221, 234, 255),
+				SelectionForeColor = Color.FromArgb(17, 24, 39),
+				Font = gridFont,
+				Padding = new Padding(6, 0, 6, 0),
+				Alignment = DataGridViewContentAlignment.MiddleLeft,
+				WrapMode = DataGridViewTriState.False
+			};
+
+			advancedDataGridView.AlternatingRowsDefaultCellStyle = new DataGridViewCellStyle
+			{
+				BackColor = Color.FromArgb(248, 250, 252),
+				ForeColor = Color.FromArgb(31, 41, 55),
+				SelectionBackColor = Color.FromArgb(221, 234, 255),
+				SelectionForeColor = Color.FromArgb(17, 24, 39),
+				Font = gridFont,
+				Padding = new Padding(6, 0, 6, 0),
+				Alignment = DataGridViewContentAlignment.MiddleLeft,
+				WrapMode = DataGridViewTriState.False
+			};
+
+			advancedDataGridView.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
+			{
+				BackColor = Color.FromArgb(243, 246, 249),
+				ForeColor = Color.FromArgb(17, 24, 39),
+				SelectionBackColor = Color.FromArgb(243, 246, 249),
+				SelectionForeColor = Color.FromArgb(17, 24, 39),
+				Font = headerFont,
+				Padding = new Padding(6, 0, 6, 0),
+				Alignment = DataGridViewContentAlignment.MiddleLeft,
+				WrapMode = DataGridViewTriState.True
+			};
+
+			advancedDataGridView.RowHeadersDefaultCellStyle = new DataGridViewCellStyle
+			{
+				BackColor = Color.FromArgb(243, 246, 249),
+				ForeColor = Color.FromArgb(100, 116, 139),
+				SelectionBackColor = Color.FromArgb(232, 240, 254),
+				SelectionForeColor = Color.FromArgb(51, 65, 85),
+				Font = gridFont,
+				Alignment = DataGridViewContentAlignment.MiddleCenter,
+				Padding = new Padding(0),
+				WrapMode = DataGridViewTriState.False
+			};
+
+			advancedDataGridView.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
+			advancedDataGridView.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
+		}
+
+		private void ApplyModernGridSizing()
+		{
+			advancedDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+			advancedDataGridView.ColumnHeadersHeight = 34;
+			advancedDataGridView.RowTemplate.Height = 26;
+
+			foreach (DataGridViewRow row in advancedDataGridView.Rows)
+				row.Height = 26;
 		}
 
 		private void Main_Load(object sender, EventArgs e)
@@ -187,6 +272,8 @@ namespace WDBXEditor
 			advancedDataGridView.RowHeadersVisible = true;
 			advancedDataGridView.ColumnHeadersVisible = true;
 			advancedDataGridView.ResumeLayout(false);
+
+			ApplyModernGridSizing();
 
 			if (cbColumnMode.SelectedItem != null)
 				advancedDataGridView.AutoSizeColumnsMode = ((KeyValuePair<string, DataGridViewAutoSizeColumnsMode>)cbColumnMode.SelectedItem).Value;

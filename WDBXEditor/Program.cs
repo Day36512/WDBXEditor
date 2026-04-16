@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Runtime.InteropServices;
+using System;
 using System.Windows.Forms;
 using WDBXEditor.ConsoleHandler;
 
@@ -16,29 +14,33 @@ namespace WDBXEditor
         [STAThread]
         static void Main(string[] args)
         {
-            InstanceManager.InstanceCheck(args); //Check to see if we can run this instance
-            InstanceManager.LoadDll("StormLib.dll"); //Loads the correct StormLib library
+            string[] appArgs = InstanceManager.StripControlArgs(args);
+            bool forceNewInstance = InstanceManager.HasNewInstanceFlag(args);
+
+            InstanceManager.InstanceCheck(appArgs, forceNewInstance); // Check whether to reuse the primary instance or launch a new one
+            InstanceManager.LoadDll("StormLib.dll"); // Loads the correct StormLib library
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-			UpdateManager.Clean();
+            UpdateManager.Clean();
 
-            if (args != null && args.Length > 0)
+            if (appArgs != null && appArgs.Length > 0)
             {
                 ConsoleManager.LoadCommandDefinitions();
 
-                if (ConsoleManager.CommandHandlers.ContainsKey(args[0].ToLower()))
-                    ConsoleManager.ConsoleMain(args); //Console mode
+                string commandKey = appArgs[0].ToLowerInvariant();
+                if (ConsoleManager.CommandHandlers.ContainsKey(commandKey))
+                    ConsoleManager.ConsoleMain(appArgs); // Console mode
                 else
-                    Application.Run(new Main(args)); //Load file(s)
+                    Application.Run(new Main(appArgs)); // Load file(s)
             }
             else
             {
-                Application.Run(new Main()); //Default
-            }            
+                Application.Run(new Main()); // Default
+            }
 
             InstanceManager.Stop();
-        }    
+        }
     }
 }
